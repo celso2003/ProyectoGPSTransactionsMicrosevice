@@ -31,9 +31,21 @@ services:
       - microservice-network
     restart: unless-stopped
 
+  jenkins:
+    image: jenkins/jenkins:lts
+    ports:
+      - "8080:8080"
+      - "50000:50000"
+    volumes:
+      - jenkins_home:/var/jenkins_home
+    networks:
+      - microservice-network
+    restart: unless-stopped
+
 networks:
   microservice-network:
     driver: bridge
 
 volumes:
-  mongodb_data: 
+  mongodb_data:
+  jenkins_home:
