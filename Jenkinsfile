@@ -1,41 +1,25 @@
 pipeline {
     agent any
 
-    environment {
-        COMPOSE_FILE = 'docker-compose.yml' 
-    }
-
     stages {
-        stage('Build') {
+        stage('Clonar Repositorio') {
             steps {
-                echo 'Ejecutando etapa Build...'
-
+                git 'https://github.com/tuusuario/tu-repo.git'
             }
         }
 
-        stage('Test') {
+        stage('Construir imagen Docker') {
             steps {
-                echo 'Ejecutando etapa Test...'
-
+                script {
+                    docker.build('mi-app')
+                }
             }
         }
 
-        stage('Deploy') {
+        stage('Levantar contenedor') {
             steps {
-                echo 'Ejecutando etapa Deploy...'
-                sh 'which docker-compose || echo "docker-compose no está instalado"'
-                sh 'docker-compose down -v'
-                sh 'docker-compose up -d --build'
+                sh 'docker-compose up -d'
             }
-        }
-    }
-
-    post {
-        failure {
-            echo 'La pipeline falló.'
-        }
-        success {
-            echo 'Pipeline completada exitosamente.'
         }
     }
 }
