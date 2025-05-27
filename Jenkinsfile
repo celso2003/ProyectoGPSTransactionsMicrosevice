@@ -4,14 +4,14 @@ pipeline {
     stages {
         stage('Clonar Repositorio') {
             steps {
-                git 'https://github.com/tuusuario/tu-repo.git'
+                git 'https://github.com/celso2003/ProyectoGPSInventorMicroservice.git'
             }
         }
 
         stage('Construir imagen Docker') {
             steps {
                 script {
-                    docker.build('mi-app')
+                    docker.build('gps-inventor-microservice')
                 }
             }
         }
