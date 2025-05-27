@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: gps-inventory
-          image: inventory-microservice:latest
+          image: inventory-microservice
           ports:
             - containerPort: 3001
           env:
