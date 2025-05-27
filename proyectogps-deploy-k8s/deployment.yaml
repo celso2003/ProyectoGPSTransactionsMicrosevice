@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: gps-inventory
-          image: proyectogpsinventormicroservice-inventory-microservice:latest
+          image: gcr.io/k8s-minikube/kicbase 
           ports:
             - containerPort: 3001
           env:
