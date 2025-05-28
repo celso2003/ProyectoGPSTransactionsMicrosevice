@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: gps-inventory
-          image: gcr.io/k8s-minikube/kicbase:v0.0.47
+          image: ghcr.io/celso2003/proyectogpsinventormicroservice/inventory-microservice:latest
           ports:
             - containerPort: 3001
           env:
@@ -25,6 +25,6 @@ spec:
             - name: MONGODB_URI
               value: "mongodb://mongodb:27017/inventory"
             - name: JWT_SECRET
-              value: "admin123"
+              value: "your_jwt_secret_key"
             - name: LOG_LEVEL
               value: "info"
