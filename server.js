@@ -66,12 +66,15 @@ app.use((req, res, next) => {
 const salesTransactionRoutes = require('./src/routes/salesTransactionRoutes');
 const purchaseTransactionRoutes = require('./src/routes/purchaseTransactionRoutes');
 const healthRoutes = require('./src/routes/healthRoutes');
+const testRoutes = require('./src/routes/testRoutes');
 
 // Define route handlers
 app.use('/sales', salesTransactionRoutes);
 app.use('/purchases', purchaseTransactionRoutes);
 app.use('/health', healthRoutes);
 app.use('/metrics', metricsRouter);
+app.use('/test', testRoutes);
+
 
 // Handle 404 errors
 app.use((req, res) => {
@@ -85,6 +88,8 @@ app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).json({ message: 'Internal server error' });
 });
+
+
 
 // Start the server
 const PORT = process.env.PORT || 3001;
