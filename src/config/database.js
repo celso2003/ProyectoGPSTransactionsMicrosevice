@@ -5,7 +5,7 @@ const connectDB = async () => {
   try {
     const connectionString = process.env.MONGODB_URI || 'mongodb://localhost:27017/inventory';
     
-    // Configure Mongoose
+    
     mongoose.set('strictQuery', false);
     
     // Connect to MongoDB
