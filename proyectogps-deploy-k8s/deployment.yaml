@@ -16,6 +16,6 @@ spec:
     spec:
       containers:
         - name: gps-inventory
-          image: ghcr.io/celsosan2003/inventory-microservice:latest
+          image: ghcr.io/celso2003/inventory-microservice:latest
           ports:
             - containerPort: 3001
