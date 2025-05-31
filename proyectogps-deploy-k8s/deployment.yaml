@@ -1,21 +1,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: mi-app
+  name: gps-inventory
   labels:
-    app: mi-app
+    app: gps-inventory
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: mi-app
+      app: gps-inventory
   template:
     metadata:
       labels:
-        app: mi-app
+        app: gps-inventory
     spec:
       containers:
-        - name: mi-app
+        - name: gps-inventory
           image: ghcr.io/celsosan2003/inventario-app:latest
           ports:
-            - containerPort: 8080
+            - containerPort: 3001

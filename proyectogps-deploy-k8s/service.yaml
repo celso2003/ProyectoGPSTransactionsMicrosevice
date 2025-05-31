@@ -8,5 +8,5 @@ spec:
     app: gps-inventory
   ports:
     - port: 80
-      targetPort: 3000
+      targetPort: 3001
       protocol: TCP
