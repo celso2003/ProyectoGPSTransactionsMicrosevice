@@ -14,8 +14,7 @@ const { router: metricsRouter, metrics } = require('./src/routes/metricsRoutes')
 // Create Express app
 const app = express();
 
-// Connect to MongoDB
-connectDB();
+
 
 // Create logs directory if it doesn't exist
 if (!fs.existsSync('logs')) {
