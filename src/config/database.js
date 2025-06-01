@@ -1,43 +1,24 @@
-const mongoose = require('mongoose');
+const { Sequelize } = require('sequelize');
 const logger = require('../utils/logger');
+
+const connectionString = process.env.POSTGRES_URI || 'postgres://user:password@localhost:5432/inventory';
+
+const sequelize = new Sequelize(connectionString, {
+  dialect: 'postgres',
+  logging: msg => logger.info(msg),
+});
 
 const connectDB = async () => {
   try {
-    const connectionString = process.env.MONGODB_URI || 'mongodb://localhost:27017/inventory';
-    
-    
-    mongoose.set('strictQuery', false);
-    
-    // Connect to MongoDB
-    const conn = await mongoose.connect(connectionString, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
-    
-    logger.info(`MongoDB Connected: ${conn.connection.host}`);
-    
-    // Handle connection errors after initial connection
-    mongoose.connection.on('error', (err) => {
-      logger.error(`MongoDB connection error: ${err}`);
-    });
-    
-    // Handle when the connection is disconnected
-    mongoose.connection.on('disconnected', () => {
-      logger.warn('MongoDB connection disconnected');
-    });
-    
-    // If Node process ends, close the MongoDB connection
-    process.on('SIGINT', async () => {
-      await mongoose.connection.close();
-      logger.info('MongoDB connection closed due to app termination');
-      process.exit(0);
-    });
-    
-    return conn;
+    await sequelize.authenticate();
+    logger.info('PostgreSQL Connected');
+    await sequelize.sync(); // Automatically create tables
+    logger.info('Database tables synchronized');
+    return sequelize;
   } catch (error) {
-    logger.error(`Error connecting to MongoDB: ${error.message}`);
+    logger.error(`Error connecting to PostgreSQL: ${error.message}`);
     process.exit(1);
   }
 };
 
-module.exports = connectDB; 
+module.exports = { sequelize, connectDB }; 

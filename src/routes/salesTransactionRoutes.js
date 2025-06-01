@@ -2,12 +2,8 @@ const express = require('express');
 const { body } = require('express-validator');
 const salesTransactionController = require('../controllers/salesTransactionController');
 const validateRequest = require('../middleware/validateRequest');
-const authenticateJWT = require('../middleware/authenticateJWT');
 
 const router = express.Router();
-
-// Apply JWT authentication middleware for all routes
-router.use(authenticateJWT);
 
 // Validation rules for creating/updating sales transactions
 const salesTransactionValidationRules = [
