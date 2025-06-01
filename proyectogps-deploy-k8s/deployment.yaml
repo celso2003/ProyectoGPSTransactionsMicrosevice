@@ -6,7 +6,6 @@ metadata:
     app: gps-inventory
   annotations:
     argocd-image-updater.argoproj.io/image-list: ghcr.io/celso2003/proyectogpsinventormicroservice/inventory-microservice
-    argocd-image-updater.argoproj.io/ghcr.io-celso2003-proyectogpsinventormicroservice-inventory-microservice.update-strategy: latest
 spec:
   replicas: 1
   selector:
