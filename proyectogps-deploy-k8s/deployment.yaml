@@ -21,3 +21,14 @@ spec:
             - containerPort: 8080
       imagePullSecrets:
         - name: ghcr-secret
+env:
+  - name: POSTGRES_URI
+    valueFrom:
+      secretKeyRef:
+        name: inventory-microservice-secret
+        key: POSTGRES_URI
+  - name: PORT
+    valueFrom:
+      secretKeyRef:
+        name: inventory-microservice-secret
+        key: PORT
