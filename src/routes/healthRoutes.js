@@ -1,14 +1,19 @@
 const express = require('express');
-const mongoose = require('mongoose');
+const { sequelize } = require('../config/database');
 const packageJson = require('../../package.json');
 
 const router = express.Router();
 
 // Health check endpoint
 router.get('/', async (req, res) => {
-  // Check MongoDB connection
-  const dbStatus = mongoose.connection.readyState === 1 ? 'up' : 'down';
-  
+  let dbStatus = 'down';
+  try {
+    await sequelize.authenticate();
+    dbStatus = 'up';
+  } catch (e) {
+    dbStatus = 'down';
+  }
+
   const healthStatus = {
     status: dbStatus === 'up' ? 'up' : 'degraded',
     timestamp: new Date().toISOString(),
@@ -22,9 +27,9 @@ router.get('/', async (req, res) => {
       }
     }
   };
-  
+
   const statusCode = healthStatus.status === 'up' ? 200 : 503;
-  
+
   return res.status(statusCode).json(healthStatus);
 });
 

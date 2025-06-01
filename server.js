@@ -7,7 +7,7 @@ const path = require('path');
 const fs = require('fs');
 
 // Import custom modules
-const connectDB = require('./src/config/database');
+const { sequelize, connectDB } = require('./src/config/database');
 const logger = require('./src/utils/logger');
 const { router: metricsRouter, metrics } = require('./src/routes/metricsRoutes');
 
@@ -91,10 +91,14 @@ app.use((err, req, res, next) => {
 
 
 // Start the server
-const PORT = process.env.PORT || 3001;
-app.listen(PORT, () => {
-  logger.info(`Inventory Microservice running on port ${PORT}`);
-});
+(async () => {
+  await connectDB();
+  // Start the server
+  const PORT = process.env.PORT || 3001;
+  app.listen(PORT, () => {
+    logger.info(`Inventory Microservice running on port ${PORT}`);
+  });
+})();
 
 // Handle unhandled promise rejections
 process.on('unhandledRejection', (err) => {
@@ -103,4 +107,4 @@ process.on('unhandledRejection', (err) => {
 });
 
 // Export the app for testing purposes
-module.exports = app; 
+module.exports = app;

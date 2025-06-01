@@ -1,83 +1,80 @@
-const mongoose = require('mongoose');
+const { DataTypes, Model } = require('sequelize');
+const { sequelize } = require('../config/database');
 
-const productSchema = new mongoose.Schema({
-  productId: {
-    type: String,
-    required: true
-  },
-  quantity: {
-    type: Number,
-    required: true,
-    min: 1
-  },
-  unitPrice: {
-    type: Number,
-    required: true,
-    min: 0
-  }
-});
+class SalesTransaction extends Model {}
+class SalesProduct extends Model {}
 
-const salesTransactionSchema = new mongoose.Schema({
+SalesTransaction.init({
+  id: {
+    type: DataTypes.INTEGER,
+    autoIncrement: true,
+    primaryKey: true,
+  },
   transactionDate: {
-    type: Date,
-    required: true,
-    default: Date.now
+    type: DataTypes.DATE,
+    allowNull: false,
+    defaultValue: DataTypes.NOW,
   },
   customerId: {
-    type: String,
-    required: true
-  },
-  products: {
-    type: [productSchema],
-    required: true,
-    validate: [
-      {
-        validator: function(products) {
-          return products.length > 0;
-        },
-        message: 'At least one product is required for a sales transaction'
-      }
-    ]
+    type: DataTypes.STRING,
+    allowNull: false,
   },
   paymentMethod: {
-    type: String,
-    required: true,
-    enum: ['cash', 'credit_card', 'debit_card', 'bank_transfer', 'digital_wallet']
+    type: DataTypes.ENUM('cash', 'credit_card', 'debit_card', 'bank_transfer', 'digital_wallet'),
+    allowNull: false,
   },
   totalAmount: {
-    type: Number,
-    required: true,
-    min: 0
+    type: DataTypes.FLOAT,
+    allowNull: false,
+    defaultValue: 0,
   },
   notes: {
-    type: String,
-    maxlength: 1000
+    type: DataTypes.STRING(1000),
+    allowNull: true,
   },
-  createdAt: {
-    type: Date,
-    default: Date.now
-  },
-  updatedAt: {
-    type: Date,
-    default: Date.now
-  }
 }, {
-  timestamps: true
+  sequelize,
+  modelName: 'SalesTransaction',
+  tableName: 'sales_transactions',
+  timestamps: true,
 });
 
-// Middleware to calculate totalAmount before saving if not provided
-salesTransactionSchema.pre('save', function(next) {
-  if (!this.isModified('products') && this.totalAmount) {
-    return next();
-  }
-  
-  this.totalAmount = this.products.reduce((total, product) => {
-    return total + (product.quantity * product.unitPrice);
-  }, 0);
-  
-  next();
+SalesProduct.init({
+  id: {
+    type: DataTypes.INTEGER,
+    autoIncrement: true,
+    primaryKey: true,
+  },
+  salesTransactionId: {
+    type: DataTypes.INTEGER,
+    references: {
+      model: SalesTransaction,
+      key: 'id',
+    },
+    onDelete: 'CASCADE',
+  },
+  productId: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  quantity: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    validate: { min: 1 },
+  },
+  unitPrice: {
+    type: DataTypes.FLOAT,
+    allowNull: false,
+    validate: { min: 0 },
+  },
+}, {
+  sequelize,
+  modelName: 'SalesProduct',
+  tableName: 'sales_products',
+  timestamps: false,
 });
 
-const SalesTransaction = mongoose.model('SalesTransaction', salesTransactionSchema);
+SalesTransaction.hasMany(SalesProduct, { foreignKey: 'salesTransactionId', as: 'products' });
+SalesProduct.belongsTo(SalesTransaction, { foreignKey: 'salesTransactionId' });
 
-module.exports = SalesTransaction; 
+module.exports = { SalesTransaction, SalesProduct }; 

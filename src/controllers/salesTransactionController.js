@@ -1,13 +1,20 @@
-const SalesTransaction = require('../models/salesTransaction');
+const { SalesTransaction, SalesProduct } = require('../models/salesTransaction');
 const logger = require('../utils/logger');
+const { Op } = require('sequelize');
 
 // Create a new sales transaction
 exports.createSalesTransaction = async (req, res) => {
   try {
-    const salesTransaction = new SalesTransaction(req.body);
-    await salesTransaction.save();
-    
-    logger.info(`Created sales transaction with ID: ${salesTransaction._id}`);
+    const { products, ...transactionData } = req.body;
+    let totalAmount = transactionData.totalAmount;
+    if (!totalAmount && Array.isArray(products)) {
+      totalAmount = products.reduce((total, product) => total + (product.quantity * product.unitPrice), 0);
+    }
+    const salesTransaction = await SalesTransaction.create(
+      { ...transactionData, totalAmount, products },
+      { include: [{ model: SalesProduct, as: 'products' }] }
+    );
+    logger.info(`Created sales transaction with ID: ${salesTransaction.id}`);
     return res.status(201).json(salesTransaction);
   } catch (error) {
     logger.error(`Error creating sales transaction: ${error.message}`);
@@ -18,55 +25,39 @@ exports.createSalesTransaction = async (req, res) => {
 // Get all sales transactions with pagination, sorting and filtering
 exports.getAllSalesTransactions = async (req, res) => {
   try {
-    const { 
-      page = 1, 
-      limit = 10, 
-      sortBy = 'transactionDate', 
+    const {
+      page = 1,
+      limit = 10,
+      sortBy = 'transactionDate',
       orderBy = 'desc',
       startDate,
       endDate,
       customerId
     } = req.query;
-    
+
     // Prepare filter object
-    const filter = {};
-    
-    // Add date range filter if provided
+    const where = {};
     if (startDate || endDate) {
-      filter.transactionDate = {};
-      
-      if (startDate) {
-        filter.transactionDate.$gte = new Date(startDate);
-      }
-      
-      if (endDate) {
-        filter.transactionDate.$lte = new Date(endDate);
-      }
+      where.transactionDate = {};
+      if (startDate) where.transactionDate[Op.gte] = new Date(startDate);
+      if (endDate) where.transactionDate[Op.lte] = new Date(endDate);
     }
-    
-    // Add customer filter if provided
     if (customerId) {
-      filter.customerId = customerId;
+      where.customerId = customerId;
     }
-    
-    // Calculate pagination
-    const skip = (parseInt(page) - 1) * parseInt(limit);
-    
-    // Prepare sort object
-    const sort = {};
-    sort[sortBy] = orderBy === 'asc' ? 1 : -1;
-    
-    // Execute query with pagination and sorting
-    const salesTransactions = await SalesTransaction.find(filter)
-      .sort(sort)
-      .skip(skip)
-      .limit(parseInt(limit));
-    
-    // Get total count for pagination info
-    const totalTransactions = await SalesTransaction.countDocuments(filter);
-    
+
+    const offset = (parseInt(page) - 1) * parseInt(limit);
+    const order = [[sortBy, orderBy.toUpperCase()]];
+
+    const { rows: salesTransactions, count: totalTransactions } = await SalesTransaction.findAndCountAll({
+      where,
+      include: [{ model: SalesProduct, as: 'products' }],
+      order,
+      offset,
+      limit: parseInt(limit),
+    });
+
     logger.info(`Retrieved ${salesTransactions.length} sales transactions`);
-    
     return res.status(200).json({
       totalTransactions,
       totalPages: Math.ceil(totalTransactions / parseInt(limit)),
@@ -82,13 +73,13 @@ exports.getAllSalesTransactions = async (req, res) => {
 // Get a sales transaction by ID
 exports.getSalesTransactionById = async (req, res) => {
   try {
-    const salesTransaction = await SalesTransaction.findById(req.params.id);
-    
+    const salesTransaction = await SalesTransaction.findByPk(req.params.id, {
+      include: [{ model: SalesProduct, as: 'products' }]
+    });
     if (!salesTransaction) {
       logger.warn(`Sales transaction not found with ID: ${req.params.id}`);
       return res.status(404).json({ message: 'Sales transaction not found' });
     }
-    
     logger.info(`Retrieved sales transaction with ID: ${req.params.id}`);
     return res.status(200).json(salesTransaction);
   } catch (error) {
@@ -100,17 +91,22 @@ exports.getSalesTransactionById = async (req, res) => {
 // Update a sales transaction
 exports.updateSalesTransaction = async (req, res) => {
   try {
-    const salesTransaction = await SalesTransaction.findByIdAndUpdate(
-      req.params.id,
-      req.body,
-      { new: true, runValidators: true }
-    );
-    
+    const { products, ...transactionData } = req.body;
+    const salesTransaction = await SalesTransaction.findByPk(req.params.id, {
+      include: [{ model: SalesProduct, as: 'products' }]
+    });
     if (!salesTransaction) {
       logger.warn(`Sales transaction not found with ID: ${req.params.id}`);
       return res.status(404).json({ message: 'Sales transaction not found' });
     }
-    
+    await salesTransaction.update(transactionData);
+    if (products) {
+      await SalesProduct.destroy({ where: { salesTransactionId: salesTransaction.id } });
+      const productInstances = await SalesProduct.bulkCreate(
+        products.map(p => ({ ...p, salesTransactionId: salesTransaction.id }))
+      );
+      salesTransaction.products = productInstances;
+    }
     logger.info(`Updated sales transaction with ID: ${req.params.id}`);
     return res.status(200).json(salesTransaction);
   } catch (error) {
@@ -122,13 +118,12 @@ exports.updateSalesTransaction = async (req, res) => {
 // Delete a sales transaction
 exports.deleteSalesTransaction = async (req, res) => {
   try {
-    const salesTransaction = await SalesTransaction.findByIdAndDelete(req.params.id);
-    
+    const salesTransaction = await SalesTransaction.findByPk(req.params.id);
     if (!salesTransaction) {
       logger.warn(`Sales transaction not found with ID: ${req.params.id}`);
       return res.status(404).json({ message: 'Sales transaction not found' });
     }
-    
+    await salesTransaction.destroy();
     logger.info(`Deleted sales transaction with ID: ${req.params.id}`);
     return res.status(204).send();
   } catch (error) {
