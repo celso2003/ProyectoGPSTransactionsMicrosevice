@@ -9,7 +9,3 @@ spec:
   selector:
     matchLabels:
       app: gps-inventory
-  endpoints:
-    - port: http
-      path: /metrics
-      interval: 15s
