@@ -4,8 +4,7 @@ metadata:
   name: gps-inventory
   labels:
     app: gps-inventory
-  annotations:
-    argocd-image-updater.argoproj.io/image-list: ghcr.io/celso2003/proyectogpsinventormicroservice/inventory-microservice
+  
 spec:
   replicas: 1
   selector:
