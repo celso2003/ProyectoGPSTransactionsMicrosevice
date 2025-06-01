@@ -9,7 +9,7 @@ router.get('/hola', (req, res) => {
 // Nueva ruta de prueba "Hola amigos"
 //hola
 router.get('/amigos', (req, res) => {
-  res.json({ mensaje: 'Hola ricardo' });
+  res.json({ mensaje: 'Hola ricardo y celso' });
 });
 
 module.exports = router;
