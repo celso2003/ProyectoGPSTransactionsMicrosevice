@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: inventory
-          image: ghcr.io/celso2003/inventory-microservice:latest
+          image: ghcr.io/celso2003/proyectogpsinventormicroservice/inventory-microservice:latest
           ports:
             - containerPort: 8080
       imagePullSecrets:
