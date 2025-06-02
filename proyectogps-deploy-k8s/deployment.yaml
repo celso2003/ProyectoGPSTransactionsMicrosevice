@@ -1,11 +1,9 @@
-
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: gps-inventory
   labels:
     app: gps-inventory
-
 spec:
   replicas: 1
   selector:
@@ -19,7 +17,6 @@ spec:
       containers:
         - name: inventory
           image: ghcr.io/celso2003/proyectogpsinventormicroservice/inventory-microservice:latest
-          imagePullPolicy: Always
           ports:
             - containerPort: 3001
           env:
@@ -55,7 +52,3 @@ spec:
                   key: PORT
       imagePullSecrets:
         - name: ghcr-secret
-        - name: Update deployment.yaml with latest image tag
-          run: |
-            TAG=$(echo "${{ steps.meta.outputs.tags }}" | grep -o 'v\.[0-9]\+' | head -1)
-            sed -i "s|inventory-microservice:v.[0-9]\+|inventory-microservice:${TAG}|g" proyectogps-deploy-k8s/deployment.yaml
