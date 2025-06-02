@@ -4,6 +4,8 @@ metadata:
   name: gps-inventory
   labels:
     app: gps-inventory
+  annotations:
+    argocd-image-updater.argoproj.io/inventory: ghcr.io/celso2003/proyectogpsinventormicroservice/inventory-microservice
 spec:
   replicas: 1
   selector:
@@ -16,7 +18,7 @@ spec:
     spec:
       containers:
         - name: inventory
-          image: ghcr.io/celso2003/proyectogpsinventormicroservice/inventory-microservice:latest
+          image: ghcr.io/celso2003/proyectogpsinventormicroservice/inventory-microservice:v.1
           ports:
             - containerPort: 3001
           env:
