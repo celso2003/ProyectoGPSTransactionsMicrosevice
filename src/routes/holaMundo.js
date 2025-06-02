@@ -3,7 +3,7 @@ const router = express.Router();
 
 // Ruta de prueba "Hola Mundo"
 router.get('/hola', (req, res) => {
-  res.json({ mensaje: 'Hola ricardios' });
+  res.json({ mensaje: 'Hola hola' });
 });
 
 module.exports = router;
