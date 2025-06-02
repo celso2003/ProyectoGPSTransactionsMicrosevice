@@ -5,6 +5,7 @@ metadata:
   namespace: argocd
   annotations:
     argocd-image-updater.argoproj.io/inventory: ghcr.io/celso2003/proyectogpsinventormicroservice/inventory-microservice
+    argocd-image-updater.argoproj.io/inventory.update-strategy: latest
 spec:
   project: default
   source:
