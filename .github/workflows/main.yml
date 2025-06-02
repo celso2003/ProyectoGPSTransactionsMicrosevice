@@ -4,8 +4,8 @@ on:
   push:
     branches: ["main"]
   pull_request:
-    branches: [ "main" ]
-  workflow_dispatch: # Allow manual triggers
+    branches: ["main"]
+  workflow_dispatch:
 
 env:
   REGISTRY: ghcr.io
@@ -48,8 +48,7 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
-            type=semver,pattern={{version}}
-            type=semver,pattern={{major}}.{{minor}}
+            type=raw,value=v.${{ github.run_number }}
             type=raw,value=latest,enable={{is_default_branch}}
 
       - name: Build and push Docker image
