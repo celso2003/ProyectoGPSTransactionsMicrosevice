@@ -3,14 +3,16 @@ kind: Application
 metadata:
   name: gps-inventory
   namespace: argocd
+  annotations:
+    argocd-image-updater.argoproj.io/inventory: ghcr.io/celso2003/proyectogpsinventormicroservice/inventory-microservice
 spec:
   project: default
   source:
-    repoURL: https://github.com/celso2003/ProyectoGPSInventorMicroservice.git
-    path: proyectogps-deploy-k8s
+    repoURL: "https://github.com/celso2003/ProyectoGPSInventorMicroservice.git"
     targetRevision: main
+    path: proyectogps-deploy-k8s
   destination:
-    server: https://kubernetes.default.svc
+    server: "https://kubernetes.default.svc"
     namespace: default
   syncPolicy:
     automated:
