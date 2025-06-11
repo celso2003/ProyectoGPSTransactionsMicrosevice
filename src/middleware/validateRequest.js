@@ -1,9 +1,6 @@
 const { validationResult } = require('express-validator');
 const logger = require('../utils/logger');
 
-/**
- * Middleware to validate request using express-validator
- */
 const validateRequest = (req, res, next) => {
   const errors = validationResult(req);
   
