@@ -58,3 +58,14 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+
+  deploy:
+    needs: build-test-and-push
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to Railway
+        run: |
+          curl -X POST https://backboard.railway.app/graphql \
+            -H "Content-Type: application/json" \
+            -H "Authorization: Bearer ${{ secrets.RAILWAY_TOKEN }}" \
+            -d '{"query":"mutation { deployProject(input: { projectId: \"18862ce1-67ad-4d2d-b42a-73e998621604\" }) { id } }"}'
