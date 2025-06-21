@@ -63,7 +63,6 @@ jobs:
       
       - name: Trigger Railway deploy
         run: |
-          railway link --project_id 18862ce1-67ad-4d2d-b42a-73e998621604
-          railway redeploy --service inventory-microservice
+          railway up --service inventory-microservice --detach
         env:
-          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+          RAILWAY_API_TOKEN: ${{ secrets.RAILWAY_API_TOKEN }}
