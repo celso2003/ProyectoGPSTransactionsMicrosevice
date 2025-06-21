@@ -62,6 +62,9 @@ jobs:
           echo "$HOME/.railway/bin" >> $GITHUB_PATH
       
       - name: Trigger Railway deploy
-        run: railway redeploy --service inventory-microservice
+        run: |
+          railway login --token "$RAILWAY_TOKEN"
+          railway link --project-id 18862ce1-67ad-4d2d-b42a-73e998621604
+          railway redeploy --service inventory-microservice
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
