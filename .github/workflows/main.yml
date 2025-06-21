@@ -56,10 +56,6 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
-  deploy:
-    needs: build-test-and-push
-    runs-on: ubuntu-latest
-    steps:
       - name: Trigger Railway deploy
         run: |
           curl -X POST https://backboard.railway.app/graphql \
