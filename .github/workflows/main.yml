@@ -32,7 +32,6 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-    
       - name: Log in to the Container registry (GHCR)
         uses: docker/login-action@v3
         with:
@@ -67,6 +66,3 @@ jobs:
             -H "Content-Type: application/json" \
             -H "Authorization: Bearer ${{ secrets.RAILWAY_TOKEN }}" \
             -d '{"query":"mutation { deployProject(input: { projectId: \"18862ce1-67ad-4d2d-b42a-73e998621604\" }) { id } }"}'
-
-      - name: Confirm Railway Deploy Triggered
-        run: echo " Railway deploy triggered for image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest"
