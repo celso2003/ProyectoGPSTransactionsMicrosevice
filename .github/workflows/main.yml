@@ -32,10 +32,8 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      # - name: Run tests
-      #   run: npm test
-
-      - name: Log in to the Container registry
+    
+      - name: Log in to the Container registry (GHCR)
         uses: docker/login-action@v3
         with:
           registry: ${{ env.REGISTRY }}
@@ -51,7 +49,7 @@ jobs:
             type=raw,value=v.${{ github.run_number }}
             type=raw,value=latest,enable={{is_default_branch}}
 
-      - name: Build and push Docker image
+      - name: Build and push Docker image to GHCR
         uses: docker/build-push-action@v5
         with:
           context: .
@@ -63,9 +61,12 @@ jobs:
     needs: build-test-and-push
     runs-on: ubuntu-latest
     steps:
-      - name: Deploy to Railway
+      - name: Trigger Railway deploy
         run: |
           curl -X POST https://backboard.railway.app/graphql \
             -H "Content-Type: application/json" \
             -H "Authorization: Bearer ${{ secrets.RAILWAY_TOKEN }}" \
             -d '{"query":"mutation { deployProject(input: { projectId: \"18862ce1-67ad-4d2d-b42a-73e998621604\" }) { id } }"}'
+
+      - name: Confirm Railway Deploy Triggered
+        run: echo " Railway deploy triggered for image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest"
