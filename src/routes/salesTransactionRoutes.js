@@ -65,8 +65,6 @@ router.get('/:id', salesTransactionController.getSalesTransactionById);
 // Update a sales transaction
 router.put(
   '/:id',
-  salesTransactionValidationRules,
-  validateRequest,
   salesTransactionController.updateSalesTransaction
 );
 

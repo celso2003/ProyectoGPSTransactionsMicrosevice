@@ -111,6 +111,10 @@ exports.updateSalesTransaction = async (req, res) => {
     return res.status(200).json(salesTransaction);
   } catch (error) {
     logger.error(`Error updating sales transaction: ${error.message}`);
+    if (error.name === 'SequelizeEmptyResultError' || 
+        (error.name === 'SequelizeError' && error.message.includes('not found'))) {
+      return res.status(404).json({ message: 'Sales transaction not found' });
+    }
     return res.status(400).json({ message: error.message });
   }
 };

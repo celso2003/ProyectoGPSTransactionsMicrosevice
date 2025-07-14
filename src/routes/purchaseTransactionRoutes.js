@@ -65,8 +65,6 @@ router.get('/:id', purchaseTransactionController.getPurchaseTransactionById);
 // Update a purchase transaction
 router.put(
   '/:id',
-  purchaseTransactionValidationRules,
-  validateRequest,
   purchaseTransactionController.updatePurchaseTransaction
 );
 
