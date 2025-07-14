@@ -5,3 +5,15 @@
 2025-05-27 22:34:39:3439 [32minfo[39m: [32mInventory Microservice running on port 3001[39m
 2025-05-27 22:34:39:3439 [32minfo[39m: [32mMongoDB Connected: mongodb[39m
 2025-06-01 14:28:21:2821 [31merror[39m: [31mError connecting to PostgreSQL: The server does not support SSL connections[39m
+2025-07-14 11:18:40:1840 [31merror[39m: [31mError retrieving purchase transactions: The server does not support SSL connections[39m
+2025-07-14 11:18:40:1840 [31merror[39m: [31mError retrieving sales transactions: The server does not support SSL connections[39m
+2025-07-14 11:18:40:1840 [31merror[39m: [31mError retrieving purchase transaction: The server does not support SSL connections[39m
+2025-07-14 11:18:40:1840 [31merror[39m: [31mError retrieving sales transaction: The server does not support SSL connections[39m
+2025-07-14 11:18:40:1840 [33mwarn[39m: [33mValidation error: [{"field":"supplierId","message":"Supplier ID is required"},{"field":"products","message":"At least one product is required"},{"field":"paymentMethod","message":"Payment method must be valid"}][39m
+2025-07-14 11:18:40:1840 [33mwarn[39m: [33mValidation error: [{"field":"customerId","message":"Customer ID is required"},{"field":"products","message":"At least one product is required"},{"field":"paymentMethod","message":"Payment method must be valid"}][39m
+2025-07-14 11:19:15:1915 [31merror[39m: [31mError retrieving purchase transactions: The server does not support SSL connections[39m
+2025-07-14 11:19:15:1915 [31merror[39m: [31mError retrieving sales transactions: The server does not support SSL connections[39m
+2025-07-14 11:19:15:1915 [31merror[39m: [31mError retrieving purchase transaction: The server does not support SSL connections[39m
+2025-07-14 11:19:15:1915 [31merror[39m: [31mError retrieving sales transaction: The server does not support SSL connections[39m
+2025-07-14 11:19:15:1915 [33mwarn[39m: [33mValidation error: [{"field":"supplierId","message":"Supplier ID is required"},{"field":"products","message":"At least one product is required"},{"field":"paymentMethod","message":"Payment method must be valid"}][39m
+2025-07-14 11:19:15:1915 [33mwarn[39m: [33mValidation error: [{"field":"customerId","message":"Customer ID is required"},{"field":"products","message":"At least one product is required"},{"field":"paymentMethod","message":"Payment method must be valid"}][39m
