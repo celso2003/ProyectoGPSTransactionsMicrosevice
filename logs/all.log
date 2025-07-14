@@ -17,3 +17,9 @@
 2025-07-14 11:19:15:1915 [31merror[39m: [31mError retrieving sales transaction: The server does not support SSL connections[39m
 2025-07-14 11:19:15:1915 [33mwarn[39m: [33mValidation error: [{"field":"supplierId","message":"Supplier ID is required"},{"field":"products","message":"At least one product is required"},{"field":"paymentMethod","message":"Payment method must be valid"}][39m
 2025-07-14 11:19:15:1915 [33mwarn[39m: [33mValidation error: [{"field":"customerId","message":"Customer ID is required"},{"field":"products","message":"At least one product is required"},{"field":"paymentMethod","message":"Payment method must be valid"}][39m
+2025-07-14 11:21:24:2124 [31merror[39m: [31mError retrieving purchase transactions: The server does not support SSL connections[39m
+2025-07-14 11:21:24:2124 [31merror[39m: [31mError retrieving sales transactions: The server does not support SSL connections[39m
+2025-07-14 11:21:24:2124 [31merror[39m: [31mError retrieving sales transaction: The server does not support SSL connections[39m
+2025-07-14 11:21:24:2124 [31merror[39m: [31mError retrieving purchase transaction: The server does not support SSL connections[39m
+2025-07-14 11:21:24:2124 [33mwarn[39m: [33mValidation error: [{"field":"customerId","message":"Customer ID is required"},{"field":"products","message":"At least one product is required"},{"field":"paymentMethod","message":"Payment method must be valid"}][39m
+2025-07-14 11:21:24:2124 [33mwarn[39m: [33mValidation error: [{"field":"supplierId","message":"Supplier ID is required"},{"field":"products","message":"At least one product is required"},{"field":"paymentMethod","message":"Payment method must be valid"}][39m
