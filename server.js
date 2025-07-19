@@ -64,12 +64,14 @@ app.use((req, res, next) => {
 // Import routes
 const salesTransactionRoutes = require('./src/routes/salesTransactionRoutes');
 const purchaseTransactionRoutes = require('./src/routes/purchaseTransactionRoutes');
+const transactionRoutes = require('./src/routes/transactionRoutes'); // New route
 const healthRoutes = require('./src/routes/healthRoutes');
 const testRoutes = require('./src/routes/testRoutes');
 
 // Define route handlers
 app.use('/sales', salesTransactionRoutes);
 app.use('/purchases', purchaseTransactionRoutes);
+app.use('/transactions', transactionRoutes); // New route handler
 app.use('/health', healthRoutes);
 app.use('/metrics', metricsRouter);
 app.use('/test', testRoutes);
