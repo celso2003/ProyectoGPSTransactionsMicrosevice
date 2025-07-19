@@ -4,9 +4,9 @@ const { PurchaseTransaction, PurchaseProduct } = require('../models/purchaseTran
 
 async function seed() {
   try {
-    await sequelize.sync({ force: true }); // Drop and recreate tables
+    await sequelize.sync({ force: true }); // Elimina y recrea las tablas
 
-    // Seed sales transactions
+    // Insertar transacciones de ventas
     const sales1 = await SalesTransaction.create({
       transactionDate: new Date(),
       customerId: 'CUST001',
@@ -28,7 +28,7 @@ async function seed() {
       ]
     }, { include: [{ model: SalesProduct, as: 'products' }] });
 
-    // Seed purchase transactions
+    // Insertar transacciones de compras
     const purchase1 = await PurchaseTransaction.create({
       transactionDate: new Date(),
       supplierId: 'SUP001',
@@ -50,12 +50,12 @@ async function seed() {
       ]
     }, { include: [{ model: PurchaseProduct, as: 'products' }] });
 
-    console.log('Database seeded successfully!');
+    console.log('¡Base de datos poblada exitosamente!');
     process.exit(0);
   } catch (err) {
-    console.error('Seeding error:', err);
+    console.error('Error al poblar:', err);
     process.exit(1);
   }
 }
 
-seed(); 
+seed();

@@ -1,6 +1,6 @@
 const winston = require('winston');
 
-// Define log levels
+// Definir niveles de log
 const levels = {
   error: 0,
   warn: 1,
@@ -9,14 +9,14 @@ const levels = {
   debug: 4,
 };
 
-// Define log level based on the environment
+// Definir nivel de log basado en el entorno
 const level = () => {
   const env = process.env.NODE_ENV || 'development';
   const isDevelopment = env === 'development';
   return isDevelopment ? 'debug' : 'warn';
 };
 
-// Define colors for each log level
+// Definir colores para cada nivel de log
 const colors = {
   error: 'red',
   warn: 'yellow',
@@ -25,10 +25,10 @@ const colors = {
   debug: 'blue',
 };
 
-// Add colors to winston
+// Agregar colores a winston
 winston.addColors(colors);
 
-// Define the format for logs
+// Definir el formato para los logs
 const format = winston.format.combine(
   winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss:ms' }),
   winston.format.colorize({ all: true }),
@@ -37,22 +37,22 @@ const format = winston.format.combine(
   ),
 );
 
-// Define transport for logs
+// Definir transportes para los logs
 const transports = [
-  // Console transport for all logs
+  // Transporte de consola para todos los logs
   new winston.transports.Console(),
   
-  // File transport for error logs
+  // Transporte de archivo para logs de error
   new winston.transports.File({
     filename: 'logs/error.log',
     level: 'error',
   }),
   
-  // File transport for all logs
+  // Transporte de archivo para todos los logs
   new winston.transports.File({ filename: 'logs/all.log' }),
 ];
 
-// Create the logger
+// Crear el logger
 const logger = winston.createLogger({
   level: process.env.LOG_LEVEL || level(),
   levels,
@@ -60,4 +60,4 @@ const logger = winston.createLogger({
   transports,
 });
 
-module.exports = logger; 
+module.exports = logger;
