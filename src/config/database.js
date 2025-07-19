@@ -23,17 +23,18 @@ const sequelize = new Sequelize({
   logging: msg => logger.info(msg),
 });
 
+// Función para conectar a la base de datos
 const connectDB = async () => {
   try {
     await sequelize.authenticate();
-    logger.info('PostgreSQL Connected');
-    await sequelize.sync(); // Automatically create tables
-    logger.info('Database tables synchronized');
+    logger.info('PostgreSQL Conectado');
+    await sequelize.sync(); // Crear tablas automáticamente
+    logger.info('Tablas de la base de datos sincronizadas');
     return sequelize;
   } catch (error) {
-    logger.error(`Error connecting to PostgreSQL: ${error.message}`);
+    logger.error(`Error al conectar a PostgreSQL: ${error.message}`);
     process.exit(1);
   }
 };
 
-module.exports = { sequelize, connectDB }; 
+module.exports = { sequelize, connectDB };
