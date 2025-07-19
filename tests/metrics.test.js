@@ -15,13 +15,13 @@ describe('Metrics Endpoints', () => {
     expect(res.statusCode).toBe(200);
     expect(res.headers['content-type']).toContain('text/plain');
     
-    // Check for the presence of key metrics in the response text
+    // Verificar la presencia de métricas clave en el texto de respuesta
     expect(res.text).toContain('http_request_duration_ms');
     expect(res.text).toContain('http_requests_total');
     expect(res.text).toContain('sales_transactions_total');
     expect(res.text).toContain('purchase_transactions_total');
     
-    // Check that the metrics format is proper Prometheus format (starts with # HELP)
+    // Comprobar que el formato de las métricas es el formato adecuado de Prometheus (comienza con # HELP)
     expect(res.text).toMatch(/^# HELP/);
   });
 });

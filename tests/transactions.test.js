@@ -3,7 +3,7 @@ const express = require('express');
 const transactionRoutes = require('../src/routes/transactionRoutes');
 const transactionController = require('../src/controllers/transactionController');
 
-// Mock transaction controller
+// Simular el controlador de transacciones
 jest.mock('../src/controllers/transactionController', () => ({
   createTransaction: jest.fn(),
   getAllTransactions: jest.fn(),
@@ -23,13 +23,13 @@ describe('Transaction Routes', () => {
     app.use(express.json());
     app.use(transactionRoutes);
     
-    // Reset all mocks between tests
+    // Reiniciar todos los mocks entre pruebas
     jest.clearAllMocks();
   });
 
-  describe('POST / - Create Transaction', () => {
-    it('should call createTransaction controller', async () => {
-      // Mock controller implementation
+  describe('POST / - Crear Transacción', () => {
+    it('debería llamar al controlador createTransaction', async () => {
+      // Implementación simulada del controlador
       transactionController.createTransaction.mockImplementation((req, res) => {
         const newTransaction = { 
           id: 1, 
@@ -57,25 +57,25 @@ describe('Transaction Routes', () => {
       expect(response.body.rut).toBe('12345678-9');
     });
 
-    it('should validate transaction data', async () => {
-      // Invalid data - missing required fields
+    it('debería validar los datos de la transacción', async () => {
+      // Datos inválidos - faltan campos requeridos
       const invalidData = {
-        // Missing rut
+        // Falta rut
         paymentMethod: 'cash'
-        // Missing products
+        // Falta products
       };
 
       const response = await request(app)
         .post('/')
         .send(invalidData);
       
-      // Express-validator will pass errors to the controller
+      // Express-validator pasará los errores al controlador
       expect(transactionController.createTransaction).toHaveBeenCalled();
     });
   });
 
-  describe('GET / - Get All Transactions', () => {
-    it('should call getAllTransactions controller', async () => {
+  describe('GET / - Obtener Todas las Transacciones', () => {
+    it('debería llamar al controlador getAllTransactions', async () => {
       transactionController.getAllTransactions.mockImplementation((req, res) => {
         return res.status(200).json({
           transactions: [
@@ -96,7 +96,7 @@ describe('Transaction Routes', () => {
       expect(response.body.transactions).toHaveLength(2);
     });
 
-    it('should pass query parameters to controller', async () => {
+    it('debería pasar los parámetros de consulta al controlador', async () => {
       transactionController.getAllTransactions.mockImplementation((req, res) => {
         return res.status(200).json({
           transactions: [{ id: 1 }],
@@ -118,8 +118,8 @@ describe('Transaction Routes', () => {
     });
   });
 
-  describe('GET /person/:rut - Get Transactions by RUT', () => {
-    it('should call getTransactionsByRut controller with correct parameters', async () => {
+  describe('GET /person/:rut - Obtener Transacciones por RUT', () => {
+    it('debería llamar al controlador getTransactionsByRut con los parámetros correctos', async () => {
       transactionController.getTransactionsByRut.mockImplementation((req, res) => {
         return res.status(200).json({
           rut: req.params.rut,
@@ -139,8 +139,8 @@ describe('Transaction Routes', () => {
     });
   });
 
-  describe('GET /date-range - Get Transactions by Date Range', () => {
-    it('should call getTransactionsByDateRange controller', async () => {
+  describe('GET /date-range - Obtener Transacciones por Rango de Fechas', () => {
+    it('debería llamar al controlador getTransactionsByDateRange', async () => {
       transactionController.getTransactionsByDateRange.mockImplementation((req, res) => {
         return res.status(200).json({
           startDate: req.query.startDate,
@@ -163,8 +163,8 @@ describe('Transaction Routes', () => {
     });
   });
 
-  describe('GET /date-range-rut - Get Transactions by Date Range and RUT', () => {
-    it('should call getTransactionsByDateRangeAndRut controller', async () => {
+  describe('GET /date-range-rut - Obtener Transacciones por Rango de Fechas y RUT', () => {
+    it('debería llamar al controlador getTransactionsByDateRangeAndRut', async () => {
       transactionController.getTransactionsByDateRangeAndRut.mockImplementation((req, res) => {
         return res.status(200).json({
           rut: req.query.rut,
@@ -192,8 +192,8 @@ describe('Transaction Routes', () => {
     });
   });
 
-  describe('GET /:id - Get Transaction by ID', () => {
-    it('should call getTransactionById controller with correct ID', async () => {
+  describe('GET /:id - Obtener Transacción por ID', () => {
+    it('debería llamar al controlador getTransactionById con el ID correcto', async () => {
       transactionController.getTransactionById.mockImplementation((req, res) => {
         return res.status(200).json({
           id: parseInt(req.params.id),
@@ -211,8 +211,8 @@ describe('Transaction Routes', () => {
     });
   });
 
-  describe('PUT /:id - Update Transaction', () => {
-    it('should call updateTransaction controller with correct ID and data', async () => {
+  describe('PUT /:id - Actualizar Transacción', () => {
+    it('debería llamar al controlador updateTransaction con el ID y datos correctos', async () => {
       transactionController.updateTransaction.mockImplementation((req, res) => {
         const updatedTransaction = {
           id: parseInt(req.params.id),
@@ -238,23 +238,23 @@ describe('Transaction Routes', () => {
       expect(response.body.paymentMethod).toBe('credit_card');
     });
 
-    it('should validate update data', async () => {
+    it('debería validar los datos de actualización', async () => {
       const invalidData = {
-        paymentMethod: 'invalid_method',  // Invalid payment method
-        products: [{ productId: 'abc', quantity: -5 }]  // Invalid product format
+        paymentMethod: 'invalid_method',  // Método de pago inválido
+        products: [{ productId: 'abc', quantity: -5 }]  // Formato de producto inválido
       };
 
       const response = await request(app)
         .put('/1')
         .send(invalidData);
 
-      // Express-validator will pass errors to controller
+      // Express-validator pasará los errores al controlador
       expect(transactionController.updateTransaction).toHaveBeenCalled();
     });
   });
 
-  describe('DELETE /:id - Delete Transaction', () => {
-    it('should call deleteTransaction controller with correct ID', async () => {
+  describe('DELETE /:id - Eliminar Transacción', () => {
+    it('debería llamar al controlador deleteTransaction con el ID correcto', async () => {
       transactionController.deleteTransaction.mockImplementation((req, res) => {
         return res.status(204).send();
       });

@@ -2,7 +2,7 @@ const request = require('supertest');
 const express = require('express');
 const healthRoutes = require('../src/routes/healthRoutes');
 
-// Mock the database connection
+// Simular la conexión a la base de datos
 jest.mock('../src/config/database', () => {
   return {
     sequelize: {
@@ -11,7 +11,7 @@ jest.mock('../src/config/database', () => {
   };
 });
 
-// Mock package.json
+// Simular package.json
 jest.mock('../package.json', () => ({
   version: '1.0.0'
 }), { virtual: true });
@@ -25,7 +25,7 @@ describe('Health Endpoints', () => {
   });
 
   it('should return 200 when database is up', async () => {
-    // Mock successful DB connection
+    // Simular conexión exitosa a la BD
     const { sequelize } = require('../src/config/database');
     sequelize.authenticate.mockResolvedValueOnce();
 
@@ -40,7 +40,7 @@ describe('Health Endpoints', () => {
   });
 
   it('should return 503 when database is down', async () => {
-    // Mock failed DB connection
+    // Simular fallo en la conexión a la BD
     const { sequelize } = require('../src/config/database');
     sequelize.authenticate.mockRejectedValueOnce(new Error('DB Connection failed'));
 
