@@ -1,7 +1,7 @@
 const { DataTypes, Model } = require('sequelize');
 const { sequelize } = require('../config/database');
 
-// Product model
+// Modelo de Producto
 class Product extends Model {}
 Product.init({
   productid: {
@@ -36,7 +36,7 @@ Product.init({
   timestamps: false
 });
 
-// Person model
+// Modelo de Persona
 class Person extends Model {}
 Person.init({
   rut: {
@@ -62,7 +62,7 @@ Person.init({
   timestamps: false
 });
 
-// Transaction model
+// Modelo de Transacción
 class Transaction extends Model {}
 Transaction.init({
   id: {
@@ -115,7 +115,7 @@ Transaction.init({
   underscored: false
 });
 
-// Product Transaction model (junction table)
+// Modelo de Transacción de Producto (tabla intermedia)
 class ProductTransaction extends Model {}
 ProductTransaction.init({
   id: {
@@ -151,7 +151,7 @@ ProductTransaction.init({
   timestamps: false
 });
 
-// Establish relationships
+// Establecer relaciones
 Person.hasMany(Transaction, { foreignKey: 'rut' });
 Transaction.belongsTo(Person, { foreignKey: 'rut' });
 
