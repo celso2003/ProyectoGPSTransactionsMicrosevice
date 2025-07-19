@@ -83,7 +83,6 @@ describe('Transaction Routes', () => {
             { id: 2, rut: '98765432-1', transactionDate: new Date() }
           ],
           totalTransactions: 2,
-          totalPages: 1,
           currentPage: 1
         });
       });
@@ -101,7 +100,6 @@ describe('Transaction Routes', () => {
         return res.status(200).json({
           transactions: [{ id: 1 }],
           totalTransactions: 1,
-          totalPages: 1,
           currentPage: 1,
           ...req.query
         });

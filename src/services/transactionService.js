@@ -115,7 +115,6 @@ class TransactionService {
 
     return {
       totalTransactions,
-      totalPages: Math.ceil(totalTransactions / parseInt(limit)),
       currentPage: parseInt(page),
       transactions
     };
@@ -322,7 +321,6 @@ class TransactionService {
 
     return {
       totalTransactions,
-      totalPages: Math.ceil(totalTransactions / parseInt(limit)),
       currentPage: parseInt(page),
       startDate: startDate || 'Sin límite inferior',
       endDate: endDate || 'Sin límite superior',
@@ -381,7 +379,6 @@ class TransactionService {
 
     return {
       totalTransactions,
-      totalPages: Math.ceil(totalTransactions / parseInt(limit)),
       currentPage: parseInt(page),
       rut,
       personName: `${personExists.name} ${personExists.lastname || ''}`,
