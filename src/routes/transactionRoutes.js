@@ -63,6 +63,9 @@ router.get('/person/:rut', transactionController.getTransactionsByRut);
 // Get transactions by date range
 router.get('/date-range', transactionController.getTransactionsByDateRange);
 
+// Get transactions by date range and RUT
+router.get('/date-range-rut', transactionController.getTransactionsByDateRangeAndRut);
+
 // Get a transaction by ID
 router.get('/:id', transactionController.getTransactionById);
 

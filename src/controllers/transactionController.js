@@ -384,3 +384,71 @@ exports.getTransactionsByDateRange = async (req, res) => {
     return res.status(500).json({ message: error.message });
   }
 };
+
+// Get transactions by date range and RUT
+exports.getTransactionsByDateRangeAndRut = async (req, res) => {
+  try {
+    const { startDate, endDate, rut, page = 1, limit = 10 } = req.query;
+    
+    if (!rut) {
+      return res.status(400).json({ message: 'RUT parameter is required' });
+    }
+    
+    // Validate if the person exists
+    const personExists = await Person.findByPk(rut);
+    if (!personExists) {
+      logger.warn(`Person with RUT ${rut} not found`);
+      return res.status(404).json({ message: 'Person not found' });
+    }
+    
+    const where = { rut };
+    
+    // Add date filters if provided
+    if (startDate || endDate) {
+      where.transactionDate = {};
+      if (startDate) where.transactionDate[Op.gte] = new Date(startDate);
+      if (endDate) where.transactionDate[Op.lte] = new Date(endDate);
+    }
+    
+    const offset = (parseInt(page) - 1) * parseInt(limit);
+    
+    const { rows: transactions, count: totalTransactions } = await Transaction.findAndCountAll({
+      where,
+      include: [
+        {
+          model: ProductTransaction,
+          include: [Product]
+        },
+        {
+          model: Person
+        }
+      ],
+      offset,
+      limit: parseInt(limit),
+      order: [['transactionDate', 'DESC']]
+    });
+
+    // Format dates using standard JavaScript methods
+    transactions.forEach(t => {
+      if (t.transactionDate) {
+        const date = new Date(t.transactionDate);
+        t.formattedDate = date.toLocaleString('en-US', { timeZone: 'America/Santiago' });
+      }
+    });
+
+    logger.info(`Retrieved ${transactions.length} transactions for RUT: ${rut} in specified date range`);
+    return res.status(200).json({
+      totalTransactions,
+      totalPages: Math.ceil(totalTransactions / parseInt(limit)),
+      currentPage: parseInt(page),
+      rut,
+      personName: `${personExists.name} ${personExists.lastname || ''}`,
+      startDate: startDate || 'No lower limit',
+      endDate: endDate || 'No upper limit',
+      transactions
+    });
+  } catch (error) {
+    logger.error(`Error retrieving transactions by date range and RUT: ${error.message}`);
+    return res.status(500).json({ message: error.message });
+  }
+};
