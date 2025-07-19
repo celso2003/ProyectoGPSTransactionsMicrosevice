@@ -284,3 +284,43 @@ exports.deleteTransaction = async (req, res) => {
     return res.status(500).json({ message: error.message });
   }
 };
+
+// Get transactions by RUT
+exports.getTransactionsByRut = async (req, res) => {
+  try {
+    const rut = req.params.rut;
+    
+    // Validate if the person exists
+    const personExists = await Person.findByPk(rut);
+    if (!personExists) {
+      logger.warn(`Person with RUT ${rut} not found`);
+      return res.status(404).json({ message: 'Person not found' });
+    }
+    
+    // Query for transactions with this RUT
+    const transactions = await Transaction.findAll({
+      where: { rut },
+      include: [
+        {
+          model: ProductTransaction,
+          include: [Product]
+        },
+        {
+          model: Person
+        }
+      ],
+      order: [['transactionDate', 'DESC']]
+    });
+
+    logger.info(`Retrieved ${transactions.length} transactions for RUT: ${rut}`);
+    return res.status(200).json({
+      totalTransactions: transactions.length,
+      rut,
+      personName: `${personExists.name} ${personExists.lastname || ''}`,
+      transactions
+    });
+  } catch (error) {
+    logger.error(`Error retrieving transactions by RUT: ${error.message}`);
+    return res.status(500).json({ message: error.message });
+  }
+};

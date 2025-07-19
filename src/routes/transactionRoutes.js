@@ -57,6 +57,9 @@ router.post(
 // Get all transactions
 router.get('/', transactionController.getAllTransactions);
 
+// Get all transactions by RUT
+router.get('/person/:rut', transactionController.getTransactionsByRut);
+
 // Get a transaction by ID
 router.get('/:id', transactionController.getTransactionById);
 
