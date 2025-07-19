@@ -1,4 +1,4 @@
-const { Transaction, ProductTransaction, Product, Person } = require('../models/dbModels');
+const { Transaction, ProductTransaction, Product, Person } = require('../models/transaction');
 const logger = require('../utils/logger');
 const { Op } = require('sequelize');
 const { sequelize } = require('../config/database');
