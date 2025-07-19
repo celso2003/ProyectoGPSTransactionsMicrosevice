@@ -4,77 +4,77 @@ const transactionController = require('../controllers/transactionController');
 
 const router = express.Router();
 
-// Validation rules for creating/updating transactions
+// Reglas de validación para crear/actualizar transacciones
 const transactionValidationRules = [
   body('transactionDate')
     .optional()
     .isISO8601()
-    .withMessage('Transaction date must be a valid date'),
+    .withMessage('La fecha de transacción debe ser una fecha válida'),
   
   body('rut')
     .notEmpty()
-    .withMessage('RUT is required')
+    .withMessage('El RUT es obligatorio')
     .isString()
-    .withMessage('RUT must be a string'),
+    .withMessage('El RUT debe ser una cadena de caracteres'),
   
   body('products')
     .isArray({ min: 1 })
-    .withMessage('At least one product is required'),
+    .withMessage('Se requiere al menos un producto'),
   
   body('products.*.productId')
     .isInt()
-    .withMessage('Product ID must be an integer'),
+    .withMessage('El ID del producto debe ser un número entero'),
   
   body('products.*.quantity')
     .isInt({ min: 1 })
-    .withMessage('Quantity must be a positive integer'),
+    .withMessage('La cantidad debe ser un número entero positivo'),
   
   body('paymentMethod')
     .isIn(['cash', 'credit_card', 'bank_transfer', 'check', 'credit_line'])
-    .withMessage('Payment method must be valid'),
+    .withMessage('El método de pago debe ser válido'),
   
   body('totalAmount')
     .optional()
     .isFloat({ min: 0 })
-    .withMessage('Total amount must be a positive number'),
+    .withMessage('El monto total debe ser un número positivo'),
   
   body('notes')
     .optional()
     .isString()
     .isLength({ max: 1000 })
-    .withMessage('Notes must be a string with maximum 1000 characters')
+    .withMessage('Las notas deben ser una cadena de caracteres con un máximo de 1000 caracteres')
 ];
 
-// Create a new transaction
+// Crear una nueva transacción
 router.post(
   '/',
   transactionValidationRules,
   transactionController.createTransaction
 );
 
-// Get all transactions
+// Obtener todas las transacciones
 router.get('/', transactionController.getAllTransactions);
 
-// Get all transactions by RUT
+// Obtener todas las transacciones por RUT
 router.get('/person/:rut', transactionController.getTransactionsByRut);
 
-// Get transactions by date range
+// Obtener transacciones por rango de fechas
 router.get('/date-range', transactionController.getTransactionsByDateRange);
 
-// Get transactions by date range and RUT
+// Obtener transacciones por rango de fechas y RUT
 router.get('/date-range-rut', transactionController.getTransactionsByDateRangeAndRut);
 
-// Get a transaction by ID
+// Obtener una transacción por ID
 router.get('/:id', transactionController.getTransactionById);
 
-// Update a transaction
+// Actualizar una transacción
 router.put(
   '/:id',
   transactionValidationRules,
   transactionController.updateTransaction
 );
 
-// Delete a transaction
+// Eliminar una transacción
 router.delete('/:id', transactionController.deleteTransaction);
 
 module.exports = router;

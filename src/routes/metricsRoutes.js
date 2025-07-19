@@ -3,48 +3,48 @@ const promClient = require('prom-client');
 
 const router = express.Router();
 
-// Create a Registry to store metrics
+// Crear un registro para almacenar las métricas
 const register = new promClient.Registry();
 promClient.collectDefaultMetrics({ register });
 
-// Custom metrics
+// Métricas personalizadas
 const httpRequestDurationMicroseconds = new promClient.Histogram({
   name: 'http_request_duration_ms',
-  help: 'Duration of HTTP requests in ms',
+  help: 'Duración de las solicitudes HTTP en ms',
   labelNames: ['method', 'route', 'status_code'],
   buckets: [0.1, 5, 15, 50, 100, 200, 500, 1000, 2000, 5000]
 });
 
 const httpRequestCounter = new promClient.Counter({
   name: 'http_requests_total',
-  help: 'Total number of HTTP requests',
+  help: 'Número total de solicitudes HTTP',
   labelNames: ['method', 'route', 'status_code']
 });
 
-// Transaction metrics
+// Métricas de transacciones
 const salesTransactionsCounter = new promClient.Counter({
   name: 'sales_transactions_total',
-  help: 'Total number of sales transactions created',
+  help: 'Número total de transacciones de ventas creadas',
 });
 
 const purchaseTransactionsCounter = new promClient.Counter({
   name: 'purchase_transactions_total',
-  help: 'Total number of purchase transactions created',
+  help: 'Número total de transacciones de compras creadas',
 });
 
-// Register custom metrics
+// Registrar métricas personalizadas
 register.registerMetric(httpRequestDurationMicroseconds);
 register.registerMetric(httpRequestCounter);
 register.registerMetric(salesTransactionsCounter);
 register.registerMetric(purchaseTransactionsCounter);
 
-// Metrics route
+// Ruta de métricas
 router.get('/', async (req, res) => {
   res.set('Content-Type', register.contentType);
   res.end(await register.metrics());
 });
 
-// Export the register to use in other files
+// Exportar el registro para usar en otros archivos
 module.exports = {
   router,
   metrics: {
@@ -53,4 +53,4 @@ module.exports = {
     salesTransactionsCounter,
     purchaseTransactionsCounter
   }
-}; 
+};

@@ -4,7 +4,7 @@ const packageJson = require('../../package.json');
 
 const router = express.Router();
 
-// Health check endpoint
+// Endpoint de verificación de salud
 router.get('/', async (req, res) => {
   let dbStatus = 'down';
   try {
@@ -33,4 +33,4 @@ router.get('/', async (req, res) => {
   return res.status(statusCode).json(healthStatus);
 });
 
-module.exports = router; 
+module.exports = router;
