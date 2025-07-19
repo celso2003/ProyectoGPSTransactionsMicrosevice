@@ -66,10 +66,22 @@ jest.mock('../src/models/dbModels', () => {
       findAll: jest.fn().mockResolvedValue(mockProductTransactions)
     },
     Product: {
-      findByPk: jest.fn().mockResolvedValue(mockProduct)
+      findByPk: jest.fn().mockImplementation((id) => {
+        if (id === 1) {
+          return Promise.resolve(mockProduct);
+        } else {
+          return Promise.resolve(null);
+        }
+      })
     },
     Person: {
-      findByPk: jest.fn().mockResolvedValue(mockPerson)
+      findByPk: jest.fn().mockImplementation((rut) => {
+        if (rut === '12345678-9') {
+          return Promise.resolve(mockPerson);
+        } else {
+          return Promise.resolve(null);
+        }
+      })
     }
   };
 });
@@ -137,6 +149,24 @@ describe('Transaction Endpoints', () => {
         .send(transactionData);
 
       expect(res.statusCode).toBe(400);
+    });
+
+    it('should return 404 when person does not exist', async () => {
+      const transactionData = {
+        rut: '99999999-9', // Non-existent RUT
+        paymentMethod: 'cash',
+        products: [
+          { productId: 1, quantity: 2 }
+        ],
+        notes: 'Test transaction'
+      };
+
+      const res = await request(app)
+        .post('/')
+        .send(transactionData);
+
+      expect(res.statusCode).toBe(404);
+      expect(res.body).toHaveProperty('message', 'Person with provided RUT not found');
     });
   });
 
