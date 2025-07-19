@@ -74,4 +74,7 @@ router.put(
 // Delete a transaction
 router.delete('/:id', transactionController.deleteTransaction);
 
+// Get transactions by date range
+router.get('/date-range', transactionController.getTransactionsByDateRange);
+
 module.exports = router;

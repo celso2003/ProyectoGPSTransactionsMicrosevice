@@ -324,3 +324,50 @@ exports.getTransactionsByRut = async (req, res) => {
     return res.status(500).json({ message: error.message });
   }
 };
+
+// Get transactions by date range
+exports.getTransactionsByDateRange = async (req, res) => {
+  try {
+    const { startDate, endDate, page = 1, limit = 10 } = req.query;
+    
+    if (!startDate && !endDate) {
+      return res.status(400).json({ message: 'At least one date parameter (startDate or endDate) is required' });
+    }
+    
+    const where = { transactionDate: {} };
+    
+    if (startDate) where.transactionDate[Op.gte] = new Date(startDate);
+    if (endDate) where.transactionDate[Op.lte] = new Date(endDate);
+    
+    const offset = (parseInt(page) - 1) * parseInt(limit);
+    
+    const { rows: transactions, count: totalTransactions } = await Transaction.findAndCountAll({
+      where,
+      include: [
+        {
+          model: ProductTransaction,
+          include: [Product]
+        },
+        {
+          model: Person
+        }
+      ],
+      offset,
+      limit: parseInt(limit),
+      order: [['transactionDate', 'DESC']]
+    });
+
+    logger.info(`Retrieved ${transactions.length} transactions by date range`);
+    return res.status(200).json({
+      totalTransactions,
+      totalPages: Math.ceil(totalTransactions / parseInt(limit)),
+      currentPage: parseInt(page),
+      startDate: startDate || 'No lower limit',
+      endDate: endDate || 'No upper limit',
+      transactions
+    });
+  } catch (error) {
+    logger.error(`Error retrieving transactions by date range: ${error.message}`);
+    return res.status(500).json({ message: error.message });
+  }
+};
