@@ -2,7 +2,8 @@ const { Transaction, ProductTransaction, Product, Person } = require('../models/
 const logger = require('../utils/logger');
 const { Op } = require('sequelize');
 const { sequelize } = require('../config/database');
-const { format, utcToZonedTime } = require('date-fns-tz');
+// Fix import statement for date-fns-tz
+const { format } = require('date-fns-tz');
 
 // Create a new transaction
 exports.createTransaction = async (req, res) => {
@@ -358,10 +359,15 @@ exports.getTransactionsByDateRange = async (req, res) => {
       order: [['transactionDate', 'DESC']]
     });
 
-    // Formatea las fechas antes de responder
+    // Format dates using standard JavaScript methods instead of utcToZonedTime
     transactions.forEach(t => {
-      const zoned = utcToZonedTime(t.transactionDate, 'America/Santiago');
-      t.transactionDate = format(zoned, 'yyyy-MM-dd HH:mm:ssXXX', { timeZone: 'America/Santiago' });
+      if (t.transactionDate) {
+        // Create a formatted date string in Santiago timezone
+        const date = new Date(t.transactionDate);
+        // Use toLocaleString with timezone option instead of utcToZonedTime
+        t.formattedDate = date.toLocaleString('en-US', { timeZone: 'America/Santiago' });
+        // Keep the original transactionDate as is
+      }
     });
 
     logger.info(`Retrieved ${transactions.length} transactions by date range`);
