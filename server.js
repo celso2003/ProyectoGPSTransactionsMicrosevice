@@ -16,38 +16,38 @@ const app = express();
 
 
 
-// Create logs directory if it doesn't exist
+// Crear el directorio de logs si no existe
 if (!fs.existsSync('logs')) {
   fs.mkdirSync('logs');
 }
 
-// Set up middleware
-app.use(helmet()); // Add security headers
-app.use(cors()); // Enable CORS
-app.use(express.json()); // Parse JSON request bodies
-app.use(express.urlencoded({ extended: true })); // Parse URL-encoded request bodies
+// Configurar middlewares
+app.use(helmet()); // Agregar cabeceras de seguridad
+app.use(cors()); // Habilitar CORS
+app.use(express.json()); // Parsear cuerpos de solicitudes JSON
+app.use(express.urlencoded({ extended: true })); // Parsear cuerpos de solicitudes URL-encoded
 
-// Set up request logging
+// Configurar registro de solicitudes
 app.use(morgan('common', {
   stream: { write: message => logger.info(message.trim()) }
 }));
 
-// Set up metrics middleware
+// Configurar middleware de métricas
 app.use((req, res, next) => {
   const start = Date.now();
   
-  // When response is finished, record metrics
+  // Cuando la respuesta finaliza, registrar métricas
   res.on('finish', () => {
     const duration = Date.now() - start;
     
-    // Record request count
+    // Registrar conteo de solicitudes
     metrics.httpRequestCounter.inc({
       method: req.method,
       route: req.route ? req.route.path : req.path,
       status_code: res.statusCode
     });
     
-    // Record request duration
+    // Registrar duración de la solicitud
     metrics.httpRequestDurationMicroseconds.observe(
       {
         method: req.method,
@@ -61,27 +61,27 @@ app.use((req, res, next) => {
   next();
 });
 
-// Import routes
-const transactionRoutes = require('./src/routes/transactionRoutes'); // New route
+// Importar rutas
+const transactionRoutes = require('./src/routes/transactionRoutes'); // Nueva ruta
 const healthRoutes = require('./src/routes/healthRoutes');
 
-// Define route handlers
-app.use('/transactions', transactionRoutes); // New route handler
+// Definir manejadores de rutas
+app.use('/transactions', transactionRoutes); // Nuevo manejador de ruta
 app.use('/health', healthRoutes);
 app.use('/metrics', metricsRouter);
 
 
-// Handle 404 errors
+// Manejar errores 404
 app.use((req, res) => {
-  logger.warn(`Route not found: ${req.originalUrl}`);
-  res.status(404).json({ message: 'Route not found' });
+  logger.warn(`Ruta no encontrada: ${req.originalUrl}`);
+  res.status(404).json({ message: 'Ruta no encontrada' });
 });
 
-// Handle server errors
+// Manejar errores del servidor
 app.use((err, req, res, next) => {
-  logger.error(`Unhandled error: ${err.message}`);
+  logger.error(`Error no controlado: ${err.message}`);
   console.error(err.stack);
-  res.status(500).json({ message: 'Internal server error' });
+  res.status(500).json({ message: 'Error interno del servidor' });
 });
 
 
