@@ -48,7 +48,8 @@ jest.mock('../src/models/dbModels', () => {
         count: 1
       }),
       findByPk: jest.fn().mockImplementation((id) => {
-        if (id === '1') {
+        // Convert to string for consistent comparison
+        if (id.toString() === '1') {
           return Promise.resolve({
             ...mockTransaction,
             update: jest.fn().mockResolvedValue(mockTransaction),
@@ -67,7 +68,8 @@ jest.mock('../src/models/dbModels', () => {
     },
     Product: {
       findByPk: jest.fn().mockImplementation((id) => {
-        if (id === 1) {
+        // Convert to number for consistent comparison
+        if (Number(id) === 1) {
           return Promise.resolve(mockProduct);
         } else {
           return Promise.resolve(null);
