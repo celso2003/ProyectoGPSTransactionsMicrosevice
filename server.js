@@ -64,13 +64,11 @@ app.use((req, res, next) => {
 // Import routes
 const transactionRoutes = require('./src/routes/transactionRoutes'); // New route
 const healthRoutes = require('./src/routes/healthRoutes');
-const testRoutes = require('./src/routes/testRoutes');
 
 // Define route handlers
 app.use('/transactions', transactionRoutes); // New route handler
 app.use('/health', healthRoutes);
 app.use('/metrics', metricsRouter);
-app.use('/test', testRoutes);
 
 
 // Handle 404 errors
