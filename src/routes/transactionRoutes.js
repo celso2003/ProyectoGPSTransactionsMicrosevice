@@ -1,7 +1,6 @@
 const express = require('express');
 const { body } = require('express-validator');
 const transactionController = require('../controllers/transactionController');
-const validateRequest = require('../middleware/validateRequest');
 
 const router = express.Router();
 
@@ -50,7 +49,6 @@ const transactionValidationRules = [
 router.post(
   '/',
   transactionValidationRules,
-  validateRequest,
   transactionController.createTransaction
 );
 
@@ -73,7 +71,6 @@ router.get('/:id', transactionController.getTransactionById);
 router.put(
   '/:id',
   transactionValidationRules,
-  validateRequest,
   transactionController.updateTransaction
 );
 
