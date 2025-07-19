@@ -2,7 +2,8 @@ const { Transaction, ProductTransaction, Product, Person } = require('../models/
 const logger = require('../utils/logger');
 const { Op } = require('sequelize');
 const { sequelize } = require('../config/database');
-const { format, utcToZonedTime } = require('date-fns-tz');
+const { format } = require('date-fns-tz');
+const { utcToZonedTime } = require('date-fns-tz');
 
 // Create a new transaction
 exports.createTransaction = async (req, res) => {
