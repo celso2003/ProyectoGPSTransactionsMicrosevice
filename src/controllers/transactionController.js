@@ -2,24 +2,24 @@ const { Transaction, ProductTransaction, Product, Person } = require('../models/
 const logger = require('../utils/logger');
 const { Op } = require('sequelize');
 const { sequelize } = require('../config/database');
-// Fix import statement for date-fns-tz
+// Corregir la declaración de importación para date-fns-tz
 const { format } = require('date-fns-tz');
 
-// Create a new transaction
+// Crear una nueva transacción
 exports.createTransaction = async (req, res) => {
   const transaction = await sequelize.transaction();
 
   try {
     const { products, ...transactionData } = req.body;
 
-    // Check if person exists
+    // Verificar si la persona existe
     const personExists = await Person.findByPk(transactionData.rut);
     if (!personExists) {
       await transaction.rollback();
-      return res.status(404).json({ message: 'Person with provided RUT not found' });
+      return res.status(404).json({ message: 'Persona con el RUT proporcionado no encontrada' });
     }
 
-    // Create transaction record
+    // Crear registro de transacción
     const newTransaction = await Transaction.create({
       ...transactionData,
       transactionDate: transactionData.transactionDate || new Date(),
@@ -27,23 +27,23 @@ exports.createTransaction = async (req, res) => {
       updatedAt: new Date()
     }, { transaction });
 
-    // Calculate total amount and create product transactions
+    // Calcular el monto total y crear transacciones de productos
     let totalAmount = 0;
 
-    // Create product transaction records
+    // Crear registros de transacciones de productos
     if (Array.isArray(products) && products.length > 0) {
       for (const item of products) {
-        // Check if product exists
+        // Verificar si el producto existe
         const product = await Product.findByPk(item.productId);
         if (!product) {
           await transaction.rollback();
-          return res.status(404).json({ message: `Product with ID ${item.productId} not found` });
+          return res.status(404).json({ message: `Producto con ID ${item.productId} no encontrado` });
         }
 
-        // Add to total amount
+        // Sumar al monto total
         totalAmount += product.price * item.quantity;
 
-        // Create product transaction record
+        // Crear registro de transacción de producto
         await ProductTransaction.create({
           TransactionId: newTransaction.id,
           productId: item.productId,
@@ -52,14 +52,14 @@ exports.createTransaction = async (req, res) => {
       }
     }
 
-    // Update total amount if not provided
+    // Actualizar el monto total si no se proporciona
     if (!transactionData.totalAmount) {
       await newTransaction.update({ totalAmount }, { transaction });
     }
 
     await transaction.commit();
 
-    // Fetch the complete transaction with products
+    // Obtener la transacción completa con productos
     const completeTransaction = await Transaction.findByPk(newTransaction.id, {
       include: [
         {
@@ -72,16 +72,16 @@ exports.createTransaction = async (req, res) => {
       ]
     });
 
-    logger.info(`Created transaction with ID: ${newTransaction.id}`);
+    logger.info(`Transacción creada con ID: ${newTransaction.id}`);
     return res.status(201).json(completeTransaction);
   } catch (error) {
     await transaction.rollback();
-    logger.error(`Error creating transaction: ${error.message}`);
+    logger.error(`Error al crear la transacción: ${error.message}`);
     return res.status(500).json({ message: error.message });
   }
 };
 
-// Get all transactions with pagination and filtering
+// Obtener todas las transacciones con paginación y filtrado
 exports.getAllTransactions = async (req, res) => {
   try {
     const {
@@ -93,7 +93,7 @@ exports.getAllTransactions = async (req, res) => {
       paymentMethod
     } = req.query;
 
-    // Prepare filter object
+    // Preparar objeto de filtro
     const where = {};
     if (startDate || endDate) {
       where.transactionDate = {};
@@ -127,7 +127,7 @@ exports.getAllTransactions = async (req, res) => {
       order: [['transactionDate', 'DESC']]
     });
 
-    logger.info(`Retrieved ${transactions.length} transactions`);
+    logger.info(`Se recuperaron ${transactions.length} transacciones`);
     return res.status(200).json({
       totalTransactions,
       totalPages: Math.ceil(totalTransactions / parseInt(limit)),
@@ -135,12 +135,12 @@ exports.getAllTransactions = async (req, res) => {
       transactions
     });
   } catch (error) {
-    logger.error(`Error retrieving transactions: ${error.message}`);
+    logger.error(`Error al recuperar transacciones: ${error.message}`);
     return res.status(500).json({ message: error.message });
   }
 };
 
-// Get a transaction by ID
+// Obtener una transacción por ID
 exports.getTransactionById = async (req, res) => {
   try {
     const transaction = await Transaction.findByPk(req.params.id, {
@@ -156,19 +156,19 @@ exports.getTransactionById = async (req, res) => {
     });
 
     if (!transaction) {
-      logger.warn(`Transaction not found with ID: ${req.params.id}`);
-      return res.status(404).json({ message: 'Transaction not found' });
+      logger.warn(`Transacción no encontrada con ID: ${req.params.id}`);
+      return res.status(404).json({ message: 'Transacción no encontrada' });
     }
 
-    logger.info(`Retrieved transaction with ID: ${req.params.id}`);
+    logger.info(`Transacción recuperada con ID: ${req.params.id}`);
     return res.status(200).json(transaction);
   } catch (error) {
-    logger.error(`Error retrieving transaction: ${error.message}`);
+    logger.error(`Error al recuperar la transacción: ${error.message}`);
     return res.status(500).json({ message: error.message });
   }
 };
 
-// Update a transaction
+// Actualizar una transacción
 exports.updateTransaction = async (req, res) => {
   const dbTransaction = await sequelize.transaction();
 
@@ -178,46 +178,46 @@ exports.updateTransaction = async (req, res) => {
     
     if (!transaction) {
       await dbTransaction.rollback();
-      logger.warn(`Transaction not found with ID: ${req.params.id}`);
-      return res.status(404).json({ message: 'Transaction not found' });
+      logger.warn(`Transacción no encontrada con ID: ${req.params.id}`);
+      return res.status(404).json({ message: 'Transacción no encontrada' });
     }
 
-    // Check if person exists if rut is being updated
+    // Verificar si la persona existe si se actualiza el rut
     if (transactionData.rut && transactionData.rut !== transaction.rut) {
       const personExists = await Person.findByPk(transactionData.rut);
       if (!personExists) {
         await dbTransaction.rollback();
-        return res.status(404).json({ message: 'Person with provided RUT not found' });
+        return res.status(404).json({ message: 'Persona con el RUT proporcionado no encontrada' });
       }
     }
 
-    // Update transaction
+    // Actualizar transacción
     await transaction.update(transactionData, { transaction: dbTransaction });
 
-    // Update products if provided
+    // Actualizar productos si se proporcionan
     if (products && Array.isArray(products)) {
-      // Delete existing product transactions
+      // Eliminar transacciones de productos existentes
       await ProductTransaction.destroy({
         where: { TransactionId: transaction.id },
         transaction: dbTransaction
       });
 
-      // Calculate new total
+      // Calcular nuevo total
       let totalAmount = 0;
 
-      // Create new product transactions
+      // Crear nuevas transacciones de productos
       for (const item of products) {
-        // Check if product exists
+        // Verificar si el producto existe
         const product = await Product.findByPk(item.productId);
         if (!product) {
           await dbTransaction.rollback();
-          return res.status(404).json({ message: `Product with ID ${item.productId} not found` });
+          return res.status(404).json({ message: `Producto con ID ${item.productId} no encontrado` });
         }
 
-        // Add to total amount
+        // Sumar al monto total
         totalAmount += product.price * item.quantity;
 
-        // Create product transaction record
+        // Crear registro de transacción de producto
         await ProductTransaction.create({
           TransactionId: transaction.id,
           productId: item.productId,
@@ -225,7 +225,7 @@ exports.updateTransaction = async (req, res) => {
         }, { transaction: dbTransaction });
       }
 
-      // Update total amount if not explicitly provided
+      // Actualizar el monto total si no se proporciona explícitamente
       if (!transactionData.totalAmount) {
         await transaction.update({ totalAmount }, { transaction: dbTransaction });
       }
@@ -233,7 +233,7 @@ exports.updateTransaction = async (req, res) => {
 
     await dbTransaction.commit();
 
-    // Fetch the updated transaction with products
+    // Obtener la transacción actualizada con productos
     const updatedTransaction = await Transaction.findByPk(transaction.id, {
       include: [
         {
@@ -246,16 +246,16 @@ exports.updateTransaction = async (req, res) => {
       ]
     });
 
-    logger.info(`Updated transaction with ID: ${req.params.id}`);
+    logger.info(`Transacción actualizada con ID: ${req.params.id}`);
     return res.status(200).json(updatedTransaction);
   } catch (error) {
     await dbTransaction.rollback();
-    logger.error(`Error updating transaction: ${error.message}`);
+    logger.error(`Error al actualizar la transacción: ${error.message}`);
     return res.status(500).json({ message: error.message });
   }
 };
 
-// Delete a transaction
+// Eliminar una transacción
 exports.deleteTransaction = async (req, res) => {
   const dbTransaction = await sequelize.transaction();
   
@@ -264,42 +264,42 @@ exports.deleteTransaction = async (req, res) => {
     
     if (!transaction) {
       await dbTransaction.rollback();
-      logger.warn(`Transaction not found with ID: ${req.params.id}`);
-      return res.status(404).json({ message: 'Transaction not found' });
+      logger.warn(`Transacción no encontrada con ID: ${req.params.id}`);
+      return res.status(404).json({ message: 'Transacción no encontrada' });
     }
 
-    // Delete associated product transactions first
+    // Eliminar primero las transacciones de productos asociadas
     await ProductTransaction.destroy({
       where: { TransactionId: transaction.id },
       transaction: dbTransaction
     });
 
-    // Then delete the transaction
+    // Luego eliminar la transacción
     await transaction.destroy({ transaction: dbTransaction });
 
     await dbTransaction.commit();
-    logger.info(`Deleted transaction with ID: ${req.params.id}`);
+    logger.info(`Transacción eliminada con ID: ${req.params.id}`);
     return res.status(204).send();
   } catch (error) {
     await dbTransaction.rollback();
-    logger.error(`Error deleting transaction: ${error.message}`);
+    logger.error(`Error al eliminar la transacción: ${error.message}`);
     return res.status(500).json({ message: error.message });
   }
 };
 
-// Get transactions by RUT
+// Obtener transacciones por RUT
 exports.getTransactionsByRut = async (req, res) => {
   try {
     const rut = req.params.rut;
     
-    // Validate if the person exists
+    // Validar si la persona existe
     const personExists = await Person.findByPk(rut);
     if (!personExists) {
-      logger.warn(`Person with RUT ${rut} not found`);
-      return res.status(404).json({ message: 'Person not found' });
+      logger.warn(`Persona con RUT ${rut} no encontrada`);
+      return res.status(404).json({ message: 'Persona no encontrada' });
     }
     
-    // Query for transactions with this RUT
+    // Consultar transacciones con este RUT
     const transactions = await Transaction.findAll({
       where: { rut },
       include: [
@@ -314,7 +314,7 @@ exports.getTransactionsByRut = async (req, res) => {
       order: [['transactionDate', 'DESC']]
     });
 
-    logger.info(`Retrieved ${transactions.length} transactions for RUT: ${rut}`);
+    logger.info(`Se recuperaron ${transactions.length} transacciones para el RUT: ${rut}`);
     return res.status(200).json({
       totalTransactions: transactions.length,
       rut,
@@ -322,18 +322,18 @@ exports.getTransactionsByRut = async (req, res) => {
       transactions
     });
   } catch (error) {
-    logger.error(`Error retrieving transactions by RUT: ${error.message}`);
+    logger.error(`Error al recuperar transacciones por RUT: ${error.message}`);
     return res.status(500).json({ message: error.message });
   }
 };
 
-// Get transactions by date range
+// Obtener transacciones por rango de fechas
 exports.getTransactionsByDateRange = async (req, res) => {
   try {
     const { startDate, endDate, page = 1, limit = 10 } = req.query;
     
     if (!startDate && !endDate) {
-      return res.status(400).json({ message: 'At least one date parameter (startDate or endDate) is required' });
+      return res.status(400).json({ message: 'Se requiere al menos un parámetro de fecha (startDate o endDate)' });
     }
     
     const where = { transactionDate: {} };
@@ -359,51 +359,51 @@ exports.getTransactionsByDateRange = async (req, res) => {
       order: [['transactionDate', 'DESC']]
     });
 
-    // Format dates using standard JavaScript methods instead of utcToZonedTime
+    // Formatear fechas usando métodos estándar de JavaScript en vez de utcToZonedTime
     transactions.forEach(t => {
       if (t.transactionDate) {
-        // Create a formatted date string in Santiago timezone
+        // Crear una cadena de fecha formateada en la zona horaria de Santiago
         const date = new Date(t.transactionDate);
-        // Use toLocaleString with timezone option instead of utcToZonedTime
+        // Usar toLocaleString con opción de zona horaria en vez de utcToZonedTime
         t.formattedDate = date.toLocaleString('en-US', { timeZone: 'America/Santiago' });
-        // Keep the original transactionDate as is
+        // Mantener el transactionDate original
       }
     });
 
-    logger.info(`Retrieved ${transactions.length} transactions by date range`);
+    logger.info(`Se recuperaron ${transactions.length} transacciones por rango de fechas`);
     return res.status(200).json({
       totalTransactions,
       totalPages: Math.ceil(totalTransactions / parseInt(limit)),
       currentPage: parseInt(page),
-      startDate: startDate || 'No lower limit',
-      endDate: endDate || 'No upper limit',
+      startDate: startDate || 'Sin límite inferior',
+      endDate: endDate || 'Sin límite superior',
       transactions
     });
   } catch (error) {
-    logger.error(`Error retrieving transactions by date range: ${error.message}`);
+    logger.error(`Error al recuperar transacciones por rango de fechas: ${error.message}`);
     return res.status(500).json({ message: error.message });
   }
 };
 
-// Get transactions by date range and RUT
+// Obtener transacciones por rango de fechas y RUT
 exports.getTransactionsByDateRangeAndRut = async (req, res) => {
   try {
     const { startDate, endDate, rut, page = 1, limit = 10 } = req.query;
     
     if (!rut) {
-      return res.status(400).json({ message: 'RUT parameter is required' });
+      return res.status(400).json({ message: 'El parámetro RUT es requerido' });
     }
     
-    // Validate if the person exists
+    // Validar si la persona existe
     const personExists = await Person.findByPk(rut);
     if (!personExists) {
-      logger.warn(`Person with RUT ${rut} not found`);
-      return res.status(404).json({ message: 'Person not found' });
+      logger.warn(`Persona con RUT ${rut} no encontrada`);
+      return res.status(404).json({ message: 'Persona no encontrada' });
     }
     
     const where = { rut };
     
-    // Add date filters if provided
+    // Agregar filtros de fecha si se proporcionan
     if (startDate || endDate) {
       where.transactionDate = {};
       if (startDate) where.transactionDate[Op.gte] = new Date(startDate);
@@ -428,7 +428,7 @@ exports.getTransactionsByDateRangeAndRut = async (req, res) => {
       order: [['transactionDate', 'DESC']]
     });
 
-    // Format dates using standard JavaScript methods
+    // Formatear fechas usando métodos estándar de JavaScript
     transactions.forEach(t => {
       if (t.transactionDate) {
         const date = new Date(t.transactionDate);
@@ -436,19 +436,19 @@ exports.getTransactionsByDateRangeAndRut = async (req, res) => {
       }
     });
 
-    logger.info(`Retrieved ${transactions.length} transactions for RUT: ${rut} in specified date range`);
+    logger.info(`Se recuperaron ${transactions.length} transacciones para el RUT: ${rut} en el rango de fechas especificado`);
     return res.status(200).json({
       totalTransactions,
       totalPages: Math.ceil(totalTransactions / parseInt(limit)),
       currentPage: parseInt(page),
       rut,
       personName: `${personExists.name} ${personExists.lastname || ''}`,
-      startDate: startDate || 'No lower limit',
-      endDate: endDate || 'No upper limit',
+      startDate: startDate || 'Sin límite inferior',
+      endDate: endDate || 'Sin límite superior',
       transactions
     });
   } catch (error) {
-    logger.error(`Error retrieving transactions by date range and RUT: ${error.message}`);
+    logger.error(`Error al recuperar transacciones por rango de fechas y RUT: ${error.message}`);
     return res.status(500).json({ message: error.message });
   }
 };
