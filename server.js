@@ -34,7 +34,7 @@ app.use(morgan('common', {
 // Importar rutas
 const transactionRoutes = require('./src/routes/transactionRoutes');
 const healthRoutes = require('./src/routes/healthRoutes');
-const purchaseRoutes = require('./routes/purchaseRoutes');
+const purchaseRoutes = require('./src/routes/purchaseRoutes');
 
 
 // Definir manejadores de rutas
