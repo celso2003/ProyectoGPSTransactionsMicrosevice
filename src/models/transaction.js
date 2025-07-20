@@ -154,6 +154,10 @@ ProductTransaction.init({
   quantity: {
     type: DataTypes.INTEGER,
     allowNull: false
+  },
+  price: {
+    type: DataTypes.DOUBLE,
+    allowNull: false
   }
 }, {
   sequelize,
