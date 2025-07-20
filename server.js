@@ -35,12 +35,15 @@ app.use(morgan('common', {
 const transactionRoutes = require('./src/routes/transactionRoutes');
 const healthRoutes = require('./src/routes/healthRoutes');
 const purchaseRoutes = require('./src/routes/purchaseRoutes');
+const salesRoutes = require('./src/routes/salesRoutes');
+
 
 
 // Definir manejadores de rutas
 app.use('/transactions', transactionRoutes); // Nuevo manejador de ruta
 app.use('/health', healthRoutes);
 app.use('/api/purchases', purchaseRoutes);
+app.use('/api/sales', salesRoutes);
 
 
 
