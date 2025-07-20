@@ -32,12 +32,16 @@ app.use(morgan('common', {
 }));
 
 // Importar rutas
-const transactionRoutes = require('./src/routes/transactionRoutes'); // Nueva ruta
+const transactionRoutes = require('./src/routes/transactionRoutes');
 const healthRoutes = require('./src/routes/healthRoutes');
+const purchaseRoutes = require('./routes/purchaseRoutes');
+
 
 // Definir manejadores de rutas
 app.use('/transactions', transactionRoutes); // Nuevo manejador de ruta
 app.use('/health', healthRoutes);
+app.use('/api/purchases', purchaseRoutes);
+
 
 
 // Manejar errores 404

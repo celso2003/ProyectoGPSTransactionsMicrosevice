@@ -63,7 +63,12 @@ Person.init({
 });
 
 // Modelo de Transacción
-class Transaction extends Model {}
+class Transaction extends Model {
+  // Getter virtual para obtener el tipo de transacción
+  get transactionType() {
+    return this.isasale ? 'Venta' : 'Compra';
+  }
+}
 Transaction.init({
   id: {
     type: DataTypes.INTEGER,
@@ -98,6 +103,12 @@ Transaction.init({
   notes: {
     type: DataTypes.STRING(1000),
     allowNull: true
+  },
+  isasale: {
+    type: DataTypes.BOOLEAN,
+    allowNull: false,
+    defaultValue: false,
+    comment: 'false = compra, true = venta'
   },
   createdAt: {
     type: DataTypes.DATE,
