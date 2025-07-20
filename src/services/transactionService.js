@@ -43,7 +43,8 @@ class TransactionService {
           await ProductTransaction.create({
             TransactionId: newTransaction.id,
             productId: item.productId,
-            quantity: item.quantity
+            quantity: item.quantity,
+            price: product.price // <--- Agregar esto
           }, { transaction });
         }
       }
@@ -190,7 +191,8 @@ class TransactionService {
           await ProductTransaction.create({
             TransactionId: transaction.id,
             productId: item.productId,
-            quantity: item.quantity
+            quantity: item.quantity,
+            price: product.price // <--- Agregar esto
           }, { transaction: dbTransaction });
         }
 
